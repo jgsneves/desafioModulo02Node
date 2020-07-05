@@ -23,7 +23,8 @@
 <p align="center">
   <a href="#rocket-sobre-o-desafio">Sobre o desafio</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#calendar-entrega">Entrega</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-  <a href="#memo-licença">Licença</a>
+  <a href="#memo-licença">Licença</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#100-onde-fui-além">Adendo</a>
 </p>
 
 ## :rocket: Sobre o desafio
@@ -128,6 +129,43 @@ Caso você queira ver como resolver o desafio, fizemos um vídeo explicando o pa
 ## :memo: Licença
 
 Esse projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+## :100: Onde fui além
+
+Resolvi implementar algumas validações e tratamentos de erros no Service de criação de nova transação, conforme código abaixo:
+```ts
+class CreateTransactionService {
+  private transactionsRepository: TransactionsRepository;
+
+  constructor(transactionsRepository: TransactionsRepository) {
+    this.transactionsRepository = transactionsRepository;
+  }
+
+  public execute({ title, type, value }: Request): Transaction {
+    const balance = this.transactionsRepository.getBalance();
+
+    if (balance.total <= value && type === 'outcome') {
+      throw Error('Você não tem saldo suficiente para esta compra');
+    }
+
+    if (typeof title !== 'string') {
+      throw Error('Insira um título de transação válido');
+    }
+
+    if (typeof value !== 'number') {
+      throw Error('Insira um valor numérico');
+    }
+
+    const transaction = this.transactionsRepository.create({
+      title,
+      type,
+      value,
+    });
+
+    return transaction;
+  }
+}
+```
 
 ---
 
